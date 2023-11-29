@@ -114,5 +114,10 @@ class GenreToTitle(models.Model):
         help_text='Внести жанр',
     )
 
+    class Meta:
+        ordering = ('title',)
+        verbose_name = 'связь медиа с жанром'
+        verbose_name_plural = 'Связи медиа с жанрами'
+
     def __str__(self):
         return f'{self.title} относится к жанру {self.genre}'
