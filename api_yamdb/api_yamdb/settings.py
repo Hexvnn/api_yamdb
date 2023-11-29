@@ -10,6 +10,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+AUTH_USER_MODEL = "user.User"
 
 AUTH_USER_MODEL = "user.User"
 
@@ -95,7 +96,7 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = "UTC"
 
