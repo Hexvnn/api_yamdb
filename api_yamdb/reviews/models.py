@@ -1,7 +1,19 @@
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 
 MAX_TEXT_LENGTH = 256
+
+
+def validate_for_year(value):
+    '''Проверяет дату создания.'''
+    #  https://docs.djangoproject.com/en/4.2/ref/validators/
+    if value > timezone.now().year:
+        raise ValidationError(
+            (f'{value} - некорректный!'),
+            params={'value': value},
+        )
 
 
 class CatGenBaseModel(models.Model):
@@ -44,8 +56,7 @@ class Genre(CatGenBaseModel):
 
 
 class Title(models.Model):
-    '''Модель самих наших нетленок.
-    '''
+    '''Модель самих наших нетленок.'''
     name = models.CharField(
         verbose_name='Название',
         max_length=MAX_TEXT_LENGTH,
@@ -54,7 +65,7 @@ class Title(models.Model):
     year = models.IntegerField(
         verbose_name='Дата выпуска',
         help_text='Внести дату выпуска',
-        #  validators=(validate_title_year,)
+        validators=[validate_for_year]
     )
     description = models.TextField(
         null=True,
@@ -72,7 +83,7 @@ class Title(models.Model):
         Category,
         on_delete=models.SET_NULL,
         null=True,
-        #  related_name='titles',
+        related_name='titles',
         verbose_name='Категория',
         help_text='Внести категорию',
     )
