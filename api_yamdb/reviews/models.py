@@ -7,8 +7,11 @@ MAX_TEXT_LENGTH = 256
 
 
 def validate_for_year(value):
-    '''Проверяет дату создания.'''
+    '''Проверяет год создания.'''
     #  https://docs.djangoproject.com/en/4.2/ref/validators/
+    #  Поскольку валидатор на данный момент всего один, то
+    #  пока не буду его выносить в отдельный файл.
+    #  Если их станет не один - тогда вынесу.
     if value > timezone.now().year:
         raise ValidationError(
             (f'{value} - некорректный!'),
