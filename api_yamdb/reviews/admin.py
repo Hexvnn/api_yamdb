@@ -15,11 +15,19 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(GenreToTitle)
 class GenreToTitleAdmin(admin.ModelAdmin):
+    list_display = ('title',
+                    'genre'
+                    )
     search_fields = ('title', 'genre')
 
 
 @admin.register(Title)
 class TitleAdmin(admin.ModelAdmin):
+    list_display = ('name',
+                    'year',
+                    'description',
+                    'category'
+                    )
     search_fields = ('name',
                      'year',
                      'description',
