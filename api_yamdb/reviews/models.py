@@ -4,6 +4,7 @@ from django.utils import timezone
 
 
 MAX_TEXT_LENGTH = 256
+MAX_SLUG_LENGTH = 50
 
 
 def validate_for_year(value):
@@ -28,7 +29,7 @@ class CatGenBaseModel(models.Model):
     )
     slug = models.SlugField(
         verbose_name='Идентификатор',
-        max_length=MAX_TEXT_LENGTH,
+        max_length=MAX_SLUG_LENGTH,
         help_text='Внести идентификатор',
         unique=True
     )

@@ -18,7 +18,7 @@ class CategoryViewSet(CreateModelMixin,
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
+    search_fields = ("name",)
 
 
 class GenreViewSet(CreateModelMixin,
@@ -29,4 +29,4 @@ class GenreViewSet(CreateModelMixin,
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('name',)
+    search_fields = ("name",)
