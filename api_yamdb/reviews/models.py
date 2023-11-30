@@ -90,6 +90,14 @@ class Title(models.Model):
         verbose_name='Категория',
         help_text='Внести категорию',
     )
+    rating = models.PositiveIntegerField(
+        #  Думаю, есть два варианта с рейтингом:
+        #  - хранить ср. рейтинг произведения в объекте самого произведения;
+        #  - хранить рейтинг каждого отзыва и на лету считать средний.
+        verbose_name='Рейтинг',
+        null=True,
+        default=None
+    )
 
     class Meta:
         ordering = ('name',)
