@@ -1,10 +1,16 @@
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 
 
 MAX_TEXT_LENGTH = 256
 MAX_SLUG_LENGTH = 50
+MAX_TEXT_LENGTH_REVIEW = 2048
+CHAR_LIMIT = 15
+
+User = get_user_model()
 
 
 def validate_for_year(value):
@@ -18,6 +24,13 @@ def validate_for_year(value):
             (f'{value} - некорректный!'),
             params={'value': value},
         )
+
+
+class DefaultVerboseNameMadel(models.Model):
+    """Абстрактная модель. Установка related_name."""
+    class Meta:
+        abstract = True
+        default_related_name = '%(class)ss'
 
 
 class CatGenBaseModel(models.Model):
@@ -91,14 +104,6 @@ class Title(models.Model):
         verbose_name='Категория',
         help_text='Внести категорию',
     )
-    rating = models.PositiveIntegerField(
-        #  Думаю, есть два варианта с рейтингом:
-        #  - хранить ср. рейтинг произведения в объекте самого произведения;
-        #  - хранить рейтинг каждого отзыва и на лету считать средний.
-        verbose_name='Рейтинг',
-        null=True,
-        default=None
-    )
 
     class Meta:
         ordering = ('name',)
@@ -130,3 +135,42 @@ class GenreToTitle(models.Model):
 
     def __str__(self):
         return f'{self.title} относится к жанру {self.genre}'
+
+
+class Review(models.Model):
+    """Модель отзывов для наших нетленок."""
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        verbose_name="Название",
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Автор",
+    )
+    text = models.TextField(
+        max_length=MAX_TEXT_LENGTH_REVIEW,
+        verbose_name="Текст отзыва",
+    )
+    score = models.PositiveSmallIntegerField(
+        # default=5, - не нужно (обязательное поле, может не проходить тесты)
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ],
+        verbose_name="Оценка",
+    )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата пупликации",
+        help_text="Добавляется автоматически",
+    )
+
+    class Meta(DefaultVerboseNameMadel.Meta):
+        ordering = ["-pub_date"]
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"
+
+    def __str__(self):
+        return f"Отзыв к {self.title[:CHAR_LIMIT]}"  # type: ignore
