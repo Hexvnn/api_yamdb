@@ -2,6 +2,7 @@ from rest_framework import serializers
 from reviews.models import Category, Genre, Title
 import datetime as dt
 from django.core.exceptions import ValidationError
+#  from user.models import User
 
 
 def validate_title_year(value):

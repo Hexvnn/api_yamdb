@@ -1,4 +1,3 @@
-#  from django.shortcuts import render
 from django.db.models import Avg
 #  from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.mixins import (CreateModelMixin,
@@ -9,7 +8,8 @@ from api.permissions import (IsAdminOrReadOnly)
 from api.serializers import (CategorySerializer,
                              GenreSerializer,
                              TitleReadSerializer,
-                             TitleWriteSerializer)
+                             TitleWriteSerializer,
+                             )
 from reviews.models import (Category,
                             Genre,
                             Title)
