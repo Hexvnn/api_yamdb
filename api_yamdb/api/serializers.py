@@ -11,6 +11,7 @@ def validate_title_year(value):
         raise ValidationError('Некоректный год.')
     return value
 
+
 class CategorySerializer(serializers.ModelSerializer):
     '''Класс сериализатора категорий нетленок.'''
 
@@ -61,4 +62,3 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
     def validate_year(self, value):
         return validate_title_year(value)
-        fields = '__all__'
