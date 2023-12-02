@@ -1,9 +1,16 @@
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
 
 
 MAX_TEXT_LENGTH = 256
+MAX_SLUG_LENGTH = 50
+MAX_TEXT_LENGTH_REVIEW = 2048
+CHAR_LIMIT = 15
+
+User = get_user_model()
 
 
 def validate_for_year(value):
@@ -19,6 +26,13 @@ def validate_for_year(value):
         )
 
 
+class DefaultVerboseNameMadel(models.Model):
+    """Абстрактная модель. Установка related_name."""
+    class Meta:
+        abstract = True
+        default_related_name = '%(class)ss'
+
+
 class CatGenBaseModel(models.Model):
     '''Абстракт для моделей Category и Genre.'''
     name = models.CharField(
@@ -28,14 +42,15 @@ class CatGenBaseModel(models.Model):
     )
     slug = models.SlugField(
         verbose_name='Идентификатор',
-        max_length=MAX_TEXT_LENGTH,
+        max_length=MAX_SLUG_LENGTH,
         help_text='Внести идентификатор',
         unique=True
     )
 
     class Meta:
         abstract = True,
-        ordering = ('name',
+        ordering = ('-id',
+                    'name',
                     'slug')
 
     def __str__(self):
@@ -100,7 +115,7 @@ class Title(models.Model):
     )
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('id',)
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
 
@@ -123,9 +138,49 @@ class GenreToTitle(models.Model):
     )
 
     class Meta:
-        ordering = ('title',)
+        ordering = ('title',
+                    'genre')
         verbose_name = 'связь медиа с жанром'
         verbose_name_plural = 'Связи медиа с жанрами'
 
     def __str__(self):
         return f'{self.title} относится к жанру {self.genre}'
+
+
+class Review(models.Model):
+    """Модель отзывов для наших нетленок."""
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        verbose_name="Название",
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Автор",
+    )
+    text = models.TextField(
+        max_length=MAX_TEXT_LENGTH_REVIEW,
+        verbose_name="Текст отзыва",
+    )
+    score = models.PositiveSmallIntegerField(
+        # default=5, - не нужно (обязательное поле, может не проходить тесты)
+        validators=[
+            MaxValueValidator(10),
+            MinValueValidator(1)
+        ],
+        verbose_name="Оценка",
+    )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата пупликации",
+        help_text="Добавляется автоматически",
+    )
+
+    class Meta(DefaultVerboseNameMadel.Meta):
+        ordering = ["-pub_date"]
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"
+
+    def __str__(self):
+        return f"Отзыв к {self.title[:CHAR_LIMIT]}"  # type: ignore
