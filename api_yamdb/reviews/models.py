@@ -26,7 +26,7 @@ def validate_for_year(value):
         )
 
 
-class DefaultVerboseNameMadel(models.Model):
+class DefaultVerboseNameModel(models.Model):
     """Абстрактная модель. Установка related_name."""
     class Meta:
         abstract = True
@@ -105,14 +105,14 @@ class Title(models.Model):
         verbose_name='Категория',
         help_text='Внести категорию',
     )
-    rating = models.PositiveIntegerField(
+    '''rating = models.PositiveIntegerField(
         #  Думаю, есть два варианта с рейтингом:
         #  - хранить ср. рейтинг произведения в объекте самого произведения;
         #  - хранить рейтинг каждого отзыва и на лету считать средний.
         verbose_name='Рейтинг',
         null=True,
         default=None
-    )
+    )'''
 
     class Meta:
         ordering = ('id',)
@@ -164,7 +164,6 @@ class Review(models.Model):
         verbose_name="Текст отзыва",
     )
     score = models.PositiveSmallIntegerField(
-        # default=5, - не нужно (обязательное поле, может не проходить тесты)
         validators=[
             MaxValueValidator(10),
             MinValueValidator(1)
@@ -177,10 +176,48 @@ class Review(models.Model):
         help_text="Добавляется автоматически",
     )
 
-    class Meta(DefaultVerboseNameMadel.Meta):
+    class Meta(DefaultVerboseNameModel.Meta):
         ordering = ["-pub_date"]
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["author", "title"],
+                name="unique_author_title",
+            ),
+        ]
 
     def __str__(self):
-        return f"Отзыв к {self.title[:CHAR_LIMIT]}"  # type: ignore
+        return f"Отзыв {self.text[:CHAR_LIMIT]} к {self.title[:CHAR_LIMIT]}"  # type: ignore
+
+
+class Comment(models.Model):
+    """Модель комментариев к отзывам."""
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        verbose_name="Отзыв",
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Автор",
+    )
+    text = models.TextField(
+        max_length=MAX_TEXT_LENGTH,
+        verbose_name="Комментарий",
+    )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата пупликации",
+        help_text="Добавляется автоматически",
+    )
+
+    class Meta(DefaultVerboseNameModel.Meta):
+        ordering = ["-pub_date"]
+        verbose_name = "Комментарий"
+        verbose_name_plural = "Комментарии"
+
+    def __str__(self):
+        return (f"Коментарий {self.text[:CHAR_LIMIT]}"
+                f"к {self.review[:CHAR_LIMIT]}")  # type: ignore

@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review, Comment
 import datetime as dt
 from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404
 
 
 def validate_title_year(value):
@@ -62,3 +63,50 @@ class TitleWriteSerializer(serializers.ModelSerializer):
 
     def validate_year(self, value):
         return validate_title_year(value)
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username',
+        default=serializers.CurrentUserDefault(),
+    )
+    score = serializers.IntegerField(
+        min_value=1,
+        max_value=10,
+    )
+    title = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='name',
+    )
+
+    class Meta:
+        model = Review
+        fields = "__all__"
+
+    def validate(self, attrs):
+        request = self.context.get("request")
+        author = request.user
+        title_id = self.context.get("view").kwargs.get("title_id")
+        title = get_object_or_404(Title, pk=title_id)
+        if (
+            request.method == "POST"
+            and Review.objects.filter(author=author, title=title).exists()
+        ):
+            raise serializers.ValidationError("Вы уже оставляли отзыв.")
+        return attrs
+
+
+class CommentSerializer(serializers.ModelSerializer):
+
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username',
+        default=serializers.CurrentUserDefault(),
+    )
+    review = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = "__all__"

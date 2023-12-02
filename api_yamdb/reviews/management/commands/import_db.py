@@ -23,7 +23,7 @@ class Command(BaseCommand):
             # https://docs-python.ru/tutorial/vstroennye-funktsii
             # -interpretatora-python/funktsija-open/
             csvfile = open(BASE_DIR / 'static/data/users.csv',
-                           #  encoding='utf8',
+                           encoding='utf8',
                            #  newline=''
                            )
             reader = DictReader(csvfile)
@@ -43,7 +43,7 @@ class Command(BaseCommand):
             print('База Genre уже и так непуста.')
         else:
             csvfile = open(BASE_DIR / 'static/data/genre.csv',
-                           #  encoding='utf8',
+                           encoding='utf8',
                            #  newline=''
                            )
             reader = DictReader(csvfile)
@@ -59,7 +59,7 @@ class Command(BaseCommand):
             print('База Category уже и так непуста.')
         else:
             csvfile = open(BASE_DIR / 'static/data/category.csv',
-                           #  encoding='utf8',
+                           encoding='utf8',
                            #  newline=''
                            )
             reader = DictReader(csvfile)
@@ -74,8 +74,8 @@ class Command(BaseCommand):
         if Title.objects.exists():
             print('База Title уже и так непуста.')
         else:
-            csvfile = open(BASE_DIR / 'static/data/title.csv',
-                           #  encoding='utf8',
+            csvfile = open(BASE_DIR / 'static/data/titles.csv',
+                           encoding='utf8',
                            #  newline=''
                            )
             reader = DictReader(csvfile)
@@ -93,7 +93,7 @@ class Command(BaseCommand):
             print('База GenreToTitle уже и так непуста.')
         else:
             csvfile = open(BASE_DIR / 'static/data/genre_title.csv',
-                           #  encoding='utf8',
+                           encoding='utf8',
                            #  newline=''
                            )
             reader = DictReader(csvfile)
@@ -109,7 +109,7 @@ class Command(BaseCommand):
             print('База Review уже и так непуста.')
         else:
             csvfile = open(BASE_DIR / 'static/data/review.csv',
-                           #  encoding='utf8',
+                           encoding='utf8',
                            #  newline=''
                            )
             reader = DictReader(csvfile)
@@ -129,7 +129,7 @@ class Command(BaseCommand):
             print('База Comment уже и так непуста.')
         else:
             csvfile = open(BASE_DIR / 'static/data/comments.csv',
-                           #  encoding='utf8',
+                           encoding='utf8',
                            #  newline=''
                            )
             reader = DictReader(csvfile)

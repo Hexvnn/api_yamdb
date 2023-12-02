@@ -6,15 +6,20 @@ from rest_framework.mixins import (CreateModelMixin,
                                    DestroyModelMixin,
                                    ListModelMixin)
 from rest_framework import filters, viewsets
-from api.permissions import (IsAdminOrReadOnly)
+from api.permissions import (IsAdminOrReadOnly,
+                             isOwner)
 from api.serializers import (CategorySerializer,
                              GenreSerializer,
                              TitleReadSerializer,
                              TitleWriteSerializer,
+                             ReviewSerializer,
+                             CommentSerializer,
                              )
 from reviews.models import (Category,
                             Genre,
-                            Title)
+                            Title,
+                            Review)
+from django.shortcuts import get_object_or_404
 
 
 class TitleFilter(FilterSet):
@@ -75,3 +80,33 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ("list", "retrieve"):
             return TitleReadSerializer
         return TitleWriteSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = ReviewSerializer
+    permission_classes = [isOwner]
+    http_method_names = ["get", "post", "patch", "delete"]
+
+    def get_title(self):
+        return get_object_or_404(Title, pk=self.kwargs.get("title_id"))
+
+    def get_queryset(self):
+        return self.get_title().reviews.all()  # type: ignore
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user, title=self.get_title())
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = [isOwner]
+    http_method_names = ["get", "post", "patch", "delete"]
+
+    def get_review(self):
+        return get_object_or_404(Review, pk=self.kwargs.get("review_id"))
+
+    def get_queryset(self):
+        return self.get_review().comments.all()  # type: ignore
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user, review=self.get_review())
