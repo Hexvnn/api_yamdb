@@ -12,6 +12,8 @@ ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = "user.User"
 
+AUTH_USER_MODEL = "user.User"
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
