@@ -19,8 +19,8 @@ from reviews.models import (Category,
 
 class TitleFilter(FilterSet):
     # https://django-filter.readthedocs.io/en/main/ref/filters.html
-    # модель: genre, category
-    # поле: slug
+    # Модели для фильтров: genre, category;
+    # поле: slug;
     # icontains: case-insensitive containment.
     genre = CharFilter(field_name='genre__slug', lookup_expr='icontains')
     category = CharFilter(field_name='category__slug', lookup_expr='icontains')
@@ -36,7 +36,7 @@ class CategoryViewSet(CreateModelMixin,
                       viewsets.GenericViewSet):
     # Можно бы и миксины вынести и замешать где-то не здесь,
     # чтобы два раза все не перечислять.
-    # Но выносить лень. А два раза (в Cat и в Genre) повторить - нет.
+    # Но лень.
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)

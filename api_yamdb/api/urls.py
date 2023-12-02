@@ -3,8 +3,6 @@ from rest_framework.routers import DefaultRouter
 from api.views import (CategoryViewSet,
                        GenreViewSet,
                        TitleViewSet,
-                       # get_token,
-                       #  signup
                        )
 
 router = DefaultRouter()
@@ -13,8 +11,8 @@ router.register("genres", GenreViewSet, basename="genres")
 router.register("titles", TitleViewSet, basename="titles")
 
 urlpatterns = [
-    #  path("v1/auth/signup/", signup, name='user-registration'),
-    #  path("v1/auth/token/", get_token, name='user_get_token'),
+    #  path("v1/auth/signup/", ...),
+    #  path("v1/auth/token/", ...),
     path('v1/auth/', include('djoser.urls')),  # !!!!!!!!!!!!!Это только для отладки части кода!!! потом удалить!!!
     path('v1/auth/', include('djoser.urls.jwt')),  # !!!!!!!!!!!!!Это только для отладки части кода!!! потом удалить!!!
     # login/pass admin1/admin1
