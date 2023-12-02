@@ -3,7 +3,6 @@ from user.models import User
 
 
 class Command(BaseCommand):
-    help = "csv-import"
 
     def ImportUser(self):
         if User.objects.exists():

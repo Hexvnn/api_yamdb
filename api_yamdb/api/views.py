@@ -1,5 +1,4 @@
 from django.db.models import Avg
-#  from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.mixins import (CreateModelMixin,
                                    DestroyModelMixin,
                                    ListModelMixin)
@@ -19,11 +18,17 @@ class CategoryViewSet(CreateModelMixin,
                       ListModelMixin,
                       DestroyModelMixin,
                       viewsets.GenericViewSet):
+    # Можно бы и миксины вынести и замешать где-то не здесь,
+    # чтобы два раза все не перечислять.
+    # Но выносить лень. А два раза (в Cat и в Genre) повторить - нет.
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
+    # В локаторе для удаления объекта приходит
+    # не 'pk', а 'slug':
+    lookup_field = "slug"
 
 
 class GenreViewSet(CreateModelMixin,
@@ -35,6 +40,9 @@ class GenreViewSet(CreateModelMixin,
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
+    # В локаторе для удаления объекта приходит
+    # не 'pk', а 'slug':
+    lookup_field = "slug"
 
 
 class TitleViewSet(viewsets.ModelViewSet):
