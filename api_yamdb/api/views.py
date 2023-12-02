@@ -1,4 +1,7 @@
 from django.db.models import Avg
+from django_filters.rest_framework import (CharFilter,
+                                           DjangoFilterBackend,
+                                           FilterSet)
 from rest_framework.mixins import (CreateModelMixin,
                                    DestroyModelMixin,
                                    ListModelMixin)
@@ -12,6 +15,19 @@ from api.serializers import (CategorySerializer,
 from reviews.models import (Category,
                             Genre,
                             Title)
+
+
+class TitleFilter(FilterSet):
+    # https://django-filter.readthedocs.io/en/main/ref/filters.html
+    # модель: genre, category
+    # поле: slug
+    # icontains: case-insensitive containment.
+    genre = CharFilter(field_name='genre__slug', lookup_expr='icontains')
+    category = CharFilter(field_name='category__slug', lookup_expr='icontains')
+
+    class Meta:
+        model = Title
+        fields = '__all__'
 
 
 class CategoryViewSet(CreateModelMixin,
@@ -46,13 +62,16 @@ class GenreViewSet(CreateModelMixin,
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(
-        rating=Avg('reviews__score')
-    ).all()
+    queryset = Title.objects.order_by('id').annotate(
+        rating=Avg("reviews__score")
+    )
+    http_method_names = ["get", "post", "patch", "delete"]
     permission_classes = (IsAdminOrReadOnly,)
-    #  filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend,)
+    # Поле фильтрации зададим в классе фильтрующего бекенда.
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
-        if self.action in ('list', 'retrieve'):
+        if self.action in ("list", "retrieve"):
             return TitleReadSerializer
         return TitleWriteSerializer

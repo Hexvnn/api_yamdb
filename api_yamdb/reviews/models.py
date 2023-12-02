@@ -49,7 +49,8 @@ class CatGenBaseModel(models.Model):
 
     class Meta:
         abstract = True,
-        ordering = ('name',
+        ordering = ('-id',
+                    'name',
                     'slug')
 
     def __str__(self):
@@ -106,7 +107,7 @@ class Title(models.Model):
     )
 
     class Meta:
-        ordering = ('name',)
+        ordering = ('id',)
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
 
@@ -129,7 +130,8 @@ class GenreToTitle(models.Model):
     )
 
     class Meta:
-        ordering = ('title',)
+        ordering = ('title',
+                    'genre')
         verbose_name = 'связь медиа с жанром'
         verbose_name_plural = 'Связи медиа с жанрами'
 
