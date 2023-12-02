@@ -29,7 +29,7 @@ class DefaultVerboseNameMadel(models.Model):
     """Абстрактная модель. Установка related_name."""
     class Meta:
         abstract = True
-        default_related_name = '%(class)ss'
+        default_related_name = "%(class)ss"
 
 
 class CatGenBaseModel(models.Model):
@@ -161,7 +161,6 @@ class Review(models.Model):
         verbose_name="Текст отзыва",
     )
     score = models.PositiveSmallIntegerField(
-        # default=5, - не нужно (обязательное поле, может не проходить тесты)
         validators=[
             MaxValueValidator(10),
             MinValueValidator(1)
@@ -174,10 +173,47 @@ class Review(models.Model):
         help_text="Добавляется автоматически",
     )
 
-    class Meta(DefaultVerboseNameMadel):
-        ordering = ["-pub_date"]
+    class Meta(DefaultVerboseNameMadel.Meta):
+        # ordering = ["-pub_date"]
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["author", "title"],
+                name="unique_author_title",
+            ),
+        ]
 
     def __str__(self):
-        return f"Отзыв к {self.title[:CHAR_LIMIT]}"
+        return f"Отзыв к {self.text[:CHAR_LIMIT]}"
+
+
+class Comment(models.Model):
+    """Модель комментариев к отзывам."""
+    review = models.ForeignKey(
+        Review,
+        on_delete=models.CASCADE,
+        verbose_name="Отзыв",
+    )
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Автор",
+    )
+    text = models.TextField(
+        max_length=MAX_TEXT_LENGTH,
+        verbose_name="Комментарий",
+    )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата пупликации",
+        help_text="Добавляется автоматически",
+    )
+
+    class Meta(DefaultVerboseNameMadel.Meta):
+        ordering = ["-pub_date"]
+        verbose_name = "Комментарий"
+        verbose_name_plural = "Комментарии"
+
+    def __str__(self):
+        return f"Коментарий к {self.review[:CHAR_LIMIT]}"

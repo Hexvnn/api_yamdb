@@ -1,6 +1,6 @@
 # login/pass admin1/admin1 (temporary by Дмитрий)
 from django.contrib import admin
-from reviews.models import Category, Genre, GenreToTitle, Title
+from reviews.models import Category, Genre, GenreToTitle, Title, Review
 
 
 @admin.register(Category)
@@ -11,6 +11,11 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
     search_fields = ('name',)
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(GenreToTitle)
