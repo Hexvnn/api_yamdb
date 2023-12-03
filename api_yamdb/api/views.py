@@ -93,6 +93,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.get_title().reviews.all()
 
+
     def perform_create(self, serializer):
         serializer.save(author=self.request.user, title=self.get_title())
 
