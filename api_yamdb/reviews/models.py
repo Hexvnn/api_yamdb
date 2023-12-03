@@ -220,4 +220,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return (f"Коментарий {self.text[:CHAR_LIMIT]}"
-                f"к {self.review[:CHAR_LIMIT]}")  # type: ignore
+                f"к {self.review[:CHAR_LIMIT]}")

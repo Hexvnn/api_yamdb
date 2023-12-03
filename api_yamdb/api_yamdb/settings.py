@@ -12,8 +12,6 @@ ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = "user.User"
 
-AUTH_USER_MODEL = "user.User"
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -22,8 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    'django_filters',
-    "djoser",  # !!!!!!!!!!!!!Это только для отладки части кода!!! потом удалить!!!
+    "django_filters",
     "api",
     "user",
     "reviews",
@@ -96,7 +93,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=999),  # Ибо нефиг.
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
