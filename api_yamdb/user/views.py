@@ -1,13 +1,15 @@
 from uuid import uuid1
-from rest_framework.views import APIView
+
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status, permissions, filters
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
-from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from .models import User
 from .serializers import (
     UserTokenSerializer,
@@ -23,8 +25,13 @@ class SignUpView(APIView):
         serializer.is_valid(raise_exception=True)
         email = serializer.data["email"]
         username = serializer.data["username"]
+        if (
+            User.objects.filter(username=username).exists()
+            or User.objects.filter(email=email).exists
+        ):
+            return Response(status=status.HTTP_403_FORBIDDEN)
         code = str(uuid1())
-        User.objects.create(
+        User.objects.get_or_create(
             username=username,
             email=email,
             confirmation_code=code,
@@ -54,6 +61,12 @@ class TokenView(APIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
+    http_method_names = (
+        "get",
+        "post",
+        "patch",
+        "delete",
+    )
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdmin)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
@@ -72,7 +85,6 @@ class UserViewSet(viewsets.ModelViewSet):
             data=request.data,
             partial=True,
         )
-
         if request.user.is_admin or request.user.is_moderator:
             serializer.is_valid(raise_exception=True)
             serializer.save()
