@@ -22,19 +22,19 @@ from api.permissions import IsAdmin
 class SignUpView(APIView):
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        email = serializer.data["email"]
-        username = serializer.data["username"]
-        if (
-            User.objects.filter(username=username).exists()
-            or User.objects.filter(email=email).exists
-        ):
-            return Response(status=status.HTTP_403_FORBIDDEN)
+        email = request.data.get("email")
+        username = request.data.get("username")
         code = str(uuid1())
-        User.objects.get_or_create(
+        user = User.objects.filter(email=email, username=username)
+        if user.exists():
+            return Response(
+                {"username": str(username), "email": str(email)},
+                status=status.HTTP_200_OK,
+            )
+        serializer.is_valid(raise_exception=True)
+        User.objects.create(
             username=username,
             email=email,
-            confirmation_code=code,
         )
         send_mail(
             "Confirmation code",

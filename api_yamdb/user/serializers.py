@@ -4,15 +4,6 @@ from .models import User
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    def validate(self, data):
-        if data["username"] == "me":
-            raise serializers.ValidationError(
-                "Пользователь с таким именем "
-                "не допустим. Пожалуйста "
-                "выберите другое имя."
-            )
-        return data
-
     class Meta:
         model = User
         fields = (
@@ -23,6 +14,15 @@ class SignUpSerializer(serializers.ModelSerializer):
             "bio",
             "role",
         )
+
+    def validate(self, data):
+        if data["username"] == "me":
+            raise serializers.ValidationError(
+                "Пользователь с таким именем "
+                "не допустим. Пожалуйста "
+                "выберите другое имя."
+            )
+        return data
 
 
 class UserTokenSerializer(serializers.Serializer):
