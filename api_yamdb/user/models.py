@@ -11,16 +11,34 @@ class User(AbstractUser):
         (MODERATOR, "moderator"),
         (ADMIN, "admin"),
     )
-    bio = models.TextField("Биография", blank=True, null=True)
+    username = models.SlugField(
+        "Имя пользователя",
+        max_length=150,
+        blank=False,
+        unique=True,
+    )
+    email = models.EmailField(
+        "Эл. почта",
+        blank=False,
+        unique=True,
+    )
+    first_name = models.CharField("Имя", max_length=150, blank=True)
+    last_name = models.CharField("Фамилия", max_length=150, blank=True)
+    bio = models.TextField("Биография", blank=True)
+    confirmation_code = models.CharField("Код подтверждения", max_length=200)
     role = models.CharField(
         "Роль",
+        max_length=150,
+        blank=False,
         choices=ROLE_CHOICES,
-        max_length=10,
-        default=USER,
+        default="user",
     )
 
     class Meta:
-        ordering = ["id"]
+        ordering = ("username",)
+
+    def __str__(self):
+        return self.username
 
     @property
     def is_admin(self):

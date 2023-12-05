@@ -6,6 +6,7 @@ from api.views import (CategoryViewSet,
                        ReviewViewSet,
                        CommentViewSet,
                        )
+from user.views import SignUpView, TokenView
 
 router = DefaultRouter()
 router.register("categories", CategoryViewSet, basename="categories")
@@ -23,7 +24,7 @@ router.register(
 )
 
 urlpatterns = [
-    #  path("v1/auth/signup/", ...),
-    #  path("v1/auth/token/", ...),
     path("v1/", include(router.urls)),
+    path("v1/auth/signup/", SignUpView.as_view(), name="signup"),
+    path("v1/auth/token/", TokenView.as_view(), name="token"),
 ]

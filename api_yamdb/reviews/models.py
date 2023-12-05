@@ -188,7 +188,7 @@ class Review(models.Model):
         ]
 
     def __str__(self):
-        return f"Отзыв {self.text[:CHAR_LIMIT]} к {self.title[:CHAR_LIMIT]}"  # type: ignore
+        return f"Отзыв {self.text[:CHAR_LIMIT]} к {self.title[:CHAR_LIMIT]}"
 
 
 class Comment(models.Model):
