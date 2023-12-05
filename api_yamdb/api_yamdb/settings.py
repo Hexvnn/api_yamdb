@@ -1,7 +1,6 @@
-from pathlib import Path
 import os
-
 from datetime import timedelta
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -103,7 +102,7 @@ SIMPLE_JWT = {
 }
 
 
-LANGUAGE_CODE = 'ru-RU'
+LANGUAGE_CODE = "ru-RU"
 
 TIME_ZONE = "UTC"
 

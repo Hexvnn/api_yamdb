@@ -1,14 +1,12 @@
 from csv import DictReader
+
 # https://docs-python.ru/standart-library/modul-csv-python/klass-dictreader-modulja-csv/
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from api_yamdb.settings import BASE_DIR
-from reviews.models import (Category,
-                            Comment,
-                            Genre,
-                            GenreToTitle,
-                            Review,
+from reviews.models import (Category, Comment, Genre, GenreToTitle, Review,
                             Title)
+
+from api_yamdb.settings import BASE_DIR
 
 User = get_user_model()
 

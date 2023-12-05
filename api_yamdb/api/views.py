@@ -1,25 +1,26 @@
 from django.db.models import Avg
-from django_filters.rest_framework import (CharFilter,
-                                           DjangoFilterBackend,
-                                           FilterSet)
-from rest_framework.mixins import (CreateModelMixin,
-                                   DestroyModelMixin,
-                                   ListModelMixin)
-from rest_framework import filters, viewsets
-from api.permissions import (IsAdminOrReadOnly,
-                             isOwner)
-from api.serializers import (CategorySerializer,
-                             GenreSerializer,
-                             TitleReadSerializer,
-                             TitleWriteSerializer,
-                             ReviewSerializer,
-                             CommentSerializer,
-                             )
-from reviews.models import (Category,
-                            Genre,
-                            Title,
-                            Review)
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import (
+    CharFilter,
+    DjangoFilterBackend,
+    FilterSet,
+)
+from rest_framework import filters, viewsets
+from rest_framework.mixins import (
+    CreateModelMixin,
+    DestroyModelMixin,
+    ListModelMixin,
+)
+from api.permissions import IsAdminOrReadOnly, isOwner
+from api.serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    TitleReadSerializer,
+    TitleWriteSerializer,
+)
+from reviews.models import Category, Genre, Review, Title
 
 
 class TitleFilter(FilterSet):
@@ -27,48 +28,45 @@ class TitleFilter(FilterSet):
     # Модели для фильтров: genre, category;
     # поле: slug;
     # icontains: case-insensitive containment.
-    genre = CharFilter(field_name='genre__slug', lookup_expr='icontains')
-    category = CharFilter(field_name='category__slug', lookup_expr='icontains')
+    genre = CharFilter(field_name="genre__slug", lookup_expr="icontains")
+    category = CharFilter(field_name="category__slug", lookup_expr="icontains")
 
     class Meta:
         model = Title
-        fields = '__all__'
+        fields = "__all__"
 
 
-class CategoryViewSet(CreateModelMixin,
-                      ListModelMixin,
-                      DestroyModelMixin,
-                      viewsets.GenericViewSet):
-    # Можно бы и миксины вынести и замешать где-то не здесь,
-    # чтобы два раза все не перечислять.
-    # Но лень.
+class CategoryViewSet(
+    CreateModelMixin,
+    ListModelMixin,
+    DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
-    # В локаторе для удаления объекта приходит
-    # не 'pk', а 'slug':
     lookup_field = "slug"
 
 
-class GenreViewSet(CreateModelMixin,
-                   ListModelMixin,
-                   DestroyModelMixin,
-                   viewsets.GenericViewSet):
+class GenreViewSet(
+    CreateModelMixin,
+    ListModelMixin,
+    DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ("name",)
-    # В локаторе для удаления объекта приходит
-    # не 'pk', а 'slug':
     lookup_field = "slug"
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.order_by('id').annotate(
-        rating=Avg("reviews__score")
+    queryset = Title.objects.order_by("id").annotate(
+        rating=Avg("reviews__score"),
     )
     http_method_names = ["get", "post", "patch", "delete"]
     permission_classes = (IsAdminOrReadOnly,)
