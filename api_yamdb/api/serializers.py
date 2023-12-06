@@ -62,6 +62,10 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         fields = "__all__"
         model = Title
 
+    def to_representation(self, title):
+        serializer = TitleReadSerializer(title)
+        return serializer.data
+
 
 class ReviewSerializer(serializers.ModelSerializer):
 
