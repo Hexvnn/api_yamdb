@@ -62,9 +62,6 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         fields = "__all__"
         model = Title
 
-    def validate_year(self, value):
-        return validate_title_year(value)
-
 
 class ReviewSerializer(serializers.ModelSerializer):
 
