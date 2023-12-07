@@ -1,17 +1,6 @@
-import datetime as dt
-
-from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from reviews.models import Category, Comment, Genre, Review, Title
-
-
-def validate_title_year(value):
-    '''Валидирует год. Что он не позже текущего.'''
-    year = dt.date.today().year
-    if not (value <= year):
-        raise ValidationError('Некоректный год.')
-    return value
 
 
 class CategorySerializer(serializers.ModelSerializer):
