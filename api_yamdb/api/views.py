@@ -55,7 +55,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "patch", "delete"]
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
-    # Поле фильтрации зададим в классе фильтрующего бекенда.
     filterset_class = TitleFilter
 
     def get_serializer_class(self):
