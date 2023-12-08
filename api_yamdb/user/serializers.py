@@ -15,14 +15,14 @@ class SignUpSerializer(serializers.ModelSerializer):
             "role",
         )
 
-    def validate(self, data):
-        if data["username"] == "me":
+    def validate_username(self, value):
+        if value.lower() == "me":
             raise serializers.ValidationError(
                 "Пользователь с таким именем "
                 "не допустим. Пожалуйста "
                 "выберите другое имя."
             )
-        return data
+        return value
 
 
 class UserTokenSerializer(serializers.Serializer):
@@ -34,7 +34,7 @@ class UserTokenSerializer(serializers.Serializer):
         confirmation_code = data["confirmation_code"]
         if not User.objects.filter(username=username).exists():
             raise exceptions.NotFound("Пользователь не найден.")
-        elif not User.objects.filter(
+        if not User.objects.filter(
             confirmation_code=confirmation_code,
         ).exists():
             raise serializers.ValidationError("Неправильный код")
