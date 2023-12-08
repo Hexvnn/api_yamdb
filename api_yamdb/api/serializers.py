@@ -1,17 +1,6 @@
-import datetime as dt
-
-from django.core.exceptions import ValidationError
-from django.shortcuts import get_object_or_404
+# from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from reviews.models import Category, Comment, Genre, Review, Title
-
-
-def validate_title_year(value):
-    '''Валидирует год. Что он не позже текущего.'''
-    year = dt.date.today().year
-    if not (value <= year):
-        raise ValidationError('Некоректный год.')
-    return value
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -62,8 +51,9 @@ class TitleWriteSerializer(serializers.ModelSerializer):
         fields = "__all__"
         model = Title
 
-    def validate_year(self, value):
-        return validate_title_year(value)
+    def to_representation(self, title):
+        serializer = TitleReadSerializer(title)
+        return serializer.data
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -72,10 +62,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username',
         default=serializers.CurrentUserDefault(),
-    )
-    score = serializers.IntegerField(
-        min_value=1,
-        max_value=10,
     )
     title = serializers.SlugRelatedField(
         read_only=True,
@@ -88,13 +74,11 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         request = self.context.get("request")
+        if request.method != "POST":
+            return attrs
         author = request.user
         title_id = self.context.get("view").kwargs.get("title_id")
-        title = get_object_or_404(Title, pk=title_id)
-        if (
-            request.method == "POST"
-            and Review.objects.filter(author=author, title=title).exists()
-        ):
+        if Review.objects.filter(author=author, title_id=title_id).exists():
             raise serializers.ValidationError("Вы уже оставляли отзыв.")
         return attrs
 

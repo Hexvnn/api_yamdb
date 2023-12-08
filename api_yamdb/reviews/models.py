@@ -45,7 +45,7 @@ class CatGenBaseModel(models.Model):
     )
 
     class Meta:
-        abstract = (True,)
+        abstract = True
         ordering = ("-id", "name", "slug")
 
     def __str__(self):
@@ -76,7 +76,7 @@ class Title(models.Model):
         max_length=MAX_TEXT_LENGTH,
         help_text="Внести название",
     )
-    year = models.IntegerField(
+    year = models.PositiveSmallIntegerField(
         verbose_name="Дата выпуска",
         help_text="Внести дату выпуска",
         validators=[validate_for_year],
