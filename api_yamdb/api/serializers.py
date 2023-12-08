@@ -63,10 +63,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         slug_field='username',
         default=serializers.CurrentUserDefault(),
     )
-    score = serializers.IntegerField(
-        min_value=1,
-        max_value=10,
-    )
     title = serializers.SlugRelatedField(
         read_only=True,
         slug_field='name',
