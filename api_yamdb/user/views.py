@@ -13,6 +13,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from api.permissions import IsAdmin
 from .models import User
 from .serializers import SignUpSerializer, UserSerializer, UserTokenSerializer
+from api_yamdb.settings import ADMIN_EMAIL
 
 
 class SignUpView(APIView):
@@ -21,8 +22,15 @@ class SignUpView(APIView):
         email = request.data.get("email")
         username = request.data.get("username")
         code = str(uuid1())
-        user = User.objects.filter(email=email, username=username)
-        if user.exists():
+        user = User.objects.filter(email=email, username=username).first()
+        if user:
+            send_mail(
+                "Confirmation code",
+                f"Используйте этот код для входа в учетную запись - {code}",
+                ADMIN_EMAIL,
+                [email],
+                fail_silently=False,
+            )
             return Response(
                 {"username": str(username), "email": str(email)},
                 status=status.HTTP_200_OK,
@@ -35,7 +43,7 @@ class SignUpView(APIView):
         send_mail(
             "Confirmation code",
             f"Используйте этот код для входа в учетную запись - {code}",
-            "admin@yamdb.com",
+            ADMIN_EMAIL,
             [email],
             fail_silently=False,
         )
@@ -81,10 +89,9 @@ class UserViewSet(viewsets.ModelViewSet):
             data=request.data,
             partial=True,
         )
+        serializer.is_valid(raise_exception=True)
         if request.user.is_admin or request.user.is_moderator:
-            serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(role="user")
+        serializer.save(role=User.USER)
         return Response(serializer.data, status=status.HTTP_200_OK)

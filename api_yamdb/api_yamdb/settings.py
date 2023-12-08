@@ -101,6 +101,7 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
+ADMIN_EMAIL = "admin@yamdb.com"
 
 LANGUAGE_CODE = "ru-RU"
 

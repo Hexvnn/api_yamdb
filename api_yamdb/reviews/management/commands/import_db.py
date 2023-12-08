@@ -1,10 +1,15 @@
 from csv import DictReader
 
-# https://docs-python.ru/standart-library/modul-csv-python/klass-dictreader-modulja-csv/
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from reviews.models import (Category, Comment, Genre, GenreToTitle, Review,
-                            Title)
+from reviews.models import (
+    Category,
+    Comment,
+    Genre,
+    GenreToTitle,
+    Review,
+    Title,
+)
 
 from api_yamdb.settings import BASE_DIR
 
@@ -12,140 +17,149 @@ User = get_user_model()
 
 
 class Command(BaseCommand):
-    help = 'CSV'
+    help = "CSV"
 
-    def GetUser(self):
+    def get_user(self):
         if User.objects.exists():
-            print('База User уже и так непуста.')
-        else:
-            # https://docs-python.ru/tutorial/vstroennye-funktsii
-            # -interpretatora-python/funktsija-open/
-            csvfile = open(BASE_DIR / 'static/data/users.csv',
-                           encoding='utf8',
-                           #  newline=''
-                           )
-            reader = DictReader(csvfile)
-            for line in reader:
-                User.objects.create(
-                    id=line['id'],
-                    username=line['username'],
-                    email=line['email'],
-                    role=line['role'],
-                    bio=line['bio'],
-                    first_name=line['first_name'],
-                    last_name=line['last_name'])
-            print('База User - окей!')
+            self.stdout.write("База User уже и так непуста.")
+            return
+        csvfile = open(
+            BASE_DIR / "static/data/users.csv",
+            encoding="utf8",
+            #  newline=''#
+        )
+        reader = DictReader(csvfile)
+        for line in reader:
+            User.objects.create(
+                id=line["id"],
+                username=line["username"],
+                email=line["email"],
+                role=line["role"],
+                bio=line["bio"],
+                first_name=line["first_name"],
+                last_name=line["last_name"],
+            )
+        self.stdout.write("База User - окей!")
 
-    def GetGenre(self):
+    def get_genre(self):
         if Genre.objects.exists():
-            print('База Genre уже и так непуста.')
-        else:
-            csvfile = open(BASE_DIR / 'static/data/genre.csv',
-                           encoding='utf8',
-                           #  newline=''
-                           )
-            reader = DictReader(csvfile)
-            for line in reader:
-                Genre.objects.create(
-                    id=line['id'],
-                    name=line['name'],
-                    slug=line['slug'])
-            print('База Genre - окей!')
+            self.stdout.write("База Genre уже и так непуста.")
+            return
+        csvfile = open(
+            BASE_DIR / "static/data/genre.csv",
+            encoding="utf8",
+            #  newline=''
+        )
+        reader = DictReader(csvfile)
+        for line in reader:
+            Genre.objects.create(
+                id=line["id"],
+                name=line["name"],
+                slug=line["slug"],
+            )
+        self.stdout.write("База Genre - окей!")
 
-    def GetCategory(self):
+    def get_category(self):
         if Category.objects.exists():
-            print('База Category уже и так непуста.')
-        else:
-            csvfile = open(BASE_DIR / 'static/data/category.csv',
-                           encoding='utf8',
-                           #  newline=''
-                           )
-            reader = DictReader(csvfile)
-            for line in reader:
-                Category.objects.create(
-                    id=line['id'],
-                    name=line['name'],
-                    slug=line['slug'])
-            print('База Category - окей!')
+            self.stdout.write("База Category уже и так непуста.")
+            return
+        csvfile = open(
+            BASE_DIR / "static/data/category.csv",
+            encoding="utf8",
+            #  newline=''
+        )
+        reader = DictReader(csvfile)
+        for line in reader:
+            Category.objects.create(
+                id=line["id"],
+                name=line["name"],
+                slug=line["slug"],
+            )
+        self.stdout.write("База Category - окей!")
 
-    def GetTitle(self):
+    def get_title(self):
         if Title.objects.exists():
-            print('База Title уже и так непуста.')
-        else:
-            csvfile = open(BASE_DIR / 'static/data/titles.csv',
-                           encoding='utf8',
-                           #  newline=''
-                           )
-            reader = DictReader(csvfile)
-            for line in reader:
-                Title.objects.create(
-                    id=line['id'],
-                    name=line['name'],
-                    year=line['year'],
-                    category=Category.objects.get(
-                        id=line['category']))
-            print('База Title - окей!')
+            self.stdout.write("База Title уже и так непуста.")
+            return
+        csvfile = open(
+            BASE_DIR / "static/data/titles.csv",
+            encoding="utf8",
+            #  newline=''
+        )
+        reader = DictReader(csvfile)
+        for line in reader:
+            Title.objects.create(
+                id=line["id"],
+                name=line["name"],
+                year=line["year"],
+                category=Category.objects.get(id=line["category"]),
+            )
+        self.stdout.write("База Title - окей!")
 
-    def GetGenreToTitle(self):
+    def get_genre_to_title(self):
         if GenreToTitle.objects.exists():
-            print('База GenreToTitle уже и так непуста.')
-        else:
-            csvfile = open(BASE_DIR / 'static/data/genre_title.csv',
-                           encoding='utf8',
-                           #  newline=''
-                           )
-            reader = DictReader(csvfile)
-            for line in reader:
-                GenreToTitle.objects.create(
-                    id=line['id'],
-                    title_id=line['title_id'],
-                    genre_id=line['genre_id'])
-            print('База GenreToTitle - окей!')
+            self.stdout.write("База GenreToTitle уже и так непуста.")
+            return
+        csvfile = open(
+            BASE_DIR / "static/data/genre_title.csv",
+            encoding="utf8",
+            #  newline=''
+        )
+        reader = DictReader(csvfile)
+        for line in reader:
+            GenreToTitle.objects.create(
+                id=line["id"],
+                title_id=line["title_id"],
+                genre_id=line["genre_id"],
+            )
+        self.stdout.write("База GenreToTitle - окей!")
 
-    def GetReview(self):
+    def get_review(self):
         if Review.objects.exists():
-            print('База Review уже и так непуста.')
-        else:
-            csvfile = open(BASE_DIR / 'static/data/review.csv',
-                           encoding='utf8',
-                           #  newline=''
-                           )
-            reader = DictReader(csvfile)
-            for line in reader:
-                Review.objects.create(
-                    id=line['id'],
-                    title_id=line['title_id'],
-                    text=line['text'],
-                    author=User.objects.get(
-                        id=line['author']),
-                    score=line['score'],
-                    pub_date=line['pub_date'])
-            print('База Review - окей!')
+            self.stdout.write("База Review уже и так непуста.")
+            return
+        csvfile = open(
+            BASE_DIR / "static/data/review.csv",
+            encoding="utf8",
+            #  newline=''
+        )
+        reader = DictReader(csvfile)
+        for line in reader:
+            Review.objects.create(
+                id=line["id"],
+                title_id=line["title_id"],
+                text=line["text"],
+                author=User.objects.get(id=line["author"]),
+                score=line["score"],
+                pub_date=line["pub_date"],
+            )
+        self.stdout.write("База Review - окей!")
 
-    def GetComment(self):
+    def get_comment(self):
         if Comment.objects.exists():
-            print('База Comment уже и так непуста.')
-        else:
-            csvfile = open(BASE_DIR / 'static/data/comments.csv',
-                           encoding='utf8',
-                           #  newline=''
-                           )
-            reader = DictReader(csvfile)
-            for line in reader:
-                Comment.objects.create(
-                    id=line['id'],
-                    review_id=line['review_id'],
-                    text=line['text'],
-                    author=User.objects.get(
-                        id=line['author']),
-                    pub_date=line['pub_date'])
-            print('База Comment - окей!')
+            self.stdout.write("База Comment уже и так непуста.")
+            return
+        csvfile = open(
+            BASE_DIR / "static/data/comments.csv",
+            encoding="utf8",
+            #  newline=''
+        )
+        reader = DictReader(csvfile)
+        for line in reader:
+            Comment.objects.create(
+                id=line["id"],
+                review_id=line["review_id"],
+                text=line["text"],
+                author=User.objects.get(id=line["author"]),
+                pub_date=line["pub_date"],
+            )
+        self.stdout.write("База Comment - окей!")
 
     def handle(self, *args, **kwargs):
-        self.GetUser()
-        self.GetGenre()
-        self.GetCategory()
-        self.GetTitle()
-        self.GetGenreToTitle()
-        self.GetReview()
-        self.GetComment()
+        self.get_user()
+        self.get_genre()
+        self.get_category()
+        self.get_title()
+        self.get_genre_to_title()
+        self.get_review()
+        self.get_comment()
