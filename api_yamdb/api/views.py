@@ -1,16 +1,13 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import (
-    CharFilter,
-    DjangoFilterBackend,
-    FilterSet,
-)
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.mixins import (
     CreateModelMixin,
     DestroyModelMixin,
     ListModelMixin,
 )
+
 from api.permissions import IsAdminOrReadOnly, isOwner
 from api.serializers import (
     CategorySerializer,
@@ -20,20 +17,8 @@ from api.serializers import (
     TitleReadSerializer,
     TitleWriteSerializer,
 )
+from reviews.filters import TitleFilter
 from reviews.models import Category, Genre, Review, Title
-
-
-class TitleFilter(FilterSet):
-    # https://django-filter.readthedocs.io/en/main/ref/filters.html
-    # Модели для фильтров: genre, category;
-    # поле: slug;
-    # icontains: case-insensitive containment.
-    genre = CharFilter(field_name="genre__slug", lookup_expr="icontains")
-    category = CharFilter(field_name="category__slug", lookup_expr="icontains")
-
-    class Meta:
-        model = Title
-        fields = "__all__"
 
 
 class CategoryViewSet(
@@ -71,7 +56,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "patch", "delete"]
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
-    # Поле фильтрации зададим в классе фильтрующего бекенда.
     filterset_class = TitleFilter
 
     def get_serializer_class(self):
@@ -82,7 +66,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [isOwner]
+    permission_classes = (isOwner,)
     http_method_names = ["get", "post", "patch", "delete"]
 
     def get_title(self):
@@ -101,7 +85,11 @@ class CommentViewSet(viewsets.ModelViewSet):
     http_method_names = ["get", "post", "patch", "delete"]
 
     def get_review(self):
-        return get_object_or_404(Review, pk=self.kwargs.get("review_id"))
+        return get_object_or_404(
+            Review,
+            pk=self.kwargs.get("review_id"),
+            title_id=self.kwargs.get("title_id"),
+        )
 
     def get_queryset(self):
         return self.get_review().comments.all()
